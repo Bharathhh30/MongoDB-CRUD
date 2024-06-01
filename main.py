@@ -174,4 +174,73 @@ delete_by_id("665b130bdf7fe275e6f79562")
 
 # delete_by_providing_field()
 
+# ------------------------------------------------------------
+
 # Relationships
+
+address ={
+    "_id" : "665b130bdf7fe275e6f79562",
+    "street" : "Bay Street",
+    "number" : 2706,
+    "city" : "San Fransisco",
+    "country" : "United States",
+    "zip" : "94107"
+}
+
+# One of the method for relationships when the data is not that  big
+
+person = {
+    "_id" : "665b130bdf7fe275e6f79512",
+    "first_name" : "John",
+
+        "address" : {
+        "_id" : "665b130bdf7fe275e6f79562",
+        "street" : "Bay Street",
+        "number" : 2706,
+        "city" : "San Fransisco",
+        "country" : "United States",
+        "zip" : "94107"
+    }
+}
+
+# other method is using foreign key
+
+address1 ={
+    "_id" : "665b130bdf7fe275e6f79562",
+    "street" : "Bay Street",
+    "number" : 2706,
+    "city" : "San Fransisco",
+    "country" : "United States",
+    "zip" : "94107",
+    "owner_id" : "665b130bdf7fe275e6f79512"  # we specifed the john id and created a relationship between address and person
+}
+
+person = {
+    "_id" : "665b130bdf7fe275e6f79512",
+    "first_name" : "John"
+}
+
+
+# Application of this relation methods
+
+# Method 1
+def add_address_embed(person_id,address):
+    from bson.objectid import ObjectId
+    _id = ObjectId(person_id)
+
+    person_collection.update_one({"_id":_id},{"$addToSet":{"addresses":address}}) #an array of data will be added 
+
+# add_address_embed("665b130bdf7fe275e6f79566",address)
+
+# Method 2
+def add_address_relationship(person_id,address):
+    from bson.objectid import ObjectId
+    _id = ObjectId(person_id)
+
+    address = address.copy()
+    address["owner_id"] = person_id
+
+    address_collection = production.address
+    address_collection.insert_one(address)
+
+add_address_relationship("665b130bdf7fe275e6f79564",address)
